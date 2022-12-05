@@ -8,7 +8,7 @@ package tictactoe;
  */
 public enum Player {
     
-    NOUGHTS('\u00A1'), CROSSES('?');
+    NOUGHTS('O'), CROSSES('X');
     
     private final char symbol;
     
