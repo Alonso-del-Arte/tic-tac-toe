@@ -1,5 +1,5 @@
-I might open this project to Hacktoberfest 2023
+This project is now open to Hacktoberfest 2024
 
-# Guidelines for Hacktoberfest 2023 contributors
+# Guidelines for Hacktoberfest 2024 contributors
 
 This is a BlueJ project, you must use BlueJ.
