@@ -5,17 +5,15 @@ import org.junit.jupiter.api.Test;
 
 /**
  * The test class PlayerTest.
- * @author  Alonso del Arte
- * @version 0.1
+ * Tests for the Player enum and its functionality.
  */
 public class PlayerTest {
-    
+
     @Test
     public void testGetSymbol() {
-        System.out.println("getSymbol");
+        // Test if the symbols are correctly assigned to each player
         assertEquals('O', Player.NOUGHTS.getSymbol());
         assertEquals('X', Player.CROSSES.getSymbol());
+        assertEquals('T', Player.TRIANGLES.getSymbol());
     }
-
 }
-
