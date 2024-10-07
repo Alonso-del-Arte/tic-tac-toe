@@ -3,67 +3,86 @@ package ui.text;
 import tictactoe.Board;
 import tictactoe.Player;
 
-import java.util.Scanner;
+import javax.swing.*;
 
 public class Game {
     private Board board;
-    private Player[] players = {Player.NOUGHTS, Player.CROSSES, Player.TRIANGLES}; // 3 players
+    private Player[] players;
     private int currentPlayerIndex;
+    private int consecutiveToWin;
 
     public Game() {
-        board = new Board(4); // Initialize board size to 4x4
-        currentPlayerIndex = 0; // Start with the first player
+        setupGame();
         playGame();
     }
 
-    public void playGame() {
-        Scanner scanner = new Scanner(System.in);
+    private void setupGame() {
+        String[] options = {"2-Player (3x3)", "3-Player (4x4)"};
+        int choice = JOptionPane.showOptionDialog(null, "Welcome to Tic Tac Toe!\nSelect game mode:",
+                "Options", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
+        if (choice == 0) {
+            players = new Player[]{Player.NOUGHTS, Player.CROSSES}; // 2 players
+            board = new Board(3); // Initialize board size to 3x3
+            consecutiveToWin = 3; // Need 3 consecutive symbols to win
+        } else if (choice == 1) {
+            players = new Player[]{Player.NOUGHTS, Player.CROSSES, Player.TRIANGLES}; // 3 players
+            board = new Board(4); // Initialize board size to 4x4
+            consecutiveToWin = 4; // Need 4 consecutive symbols to win
+        }
+
+        currentPlayerIndex = 0;
+    }
+
+    public void playGame() {
         while (true) {
             printBoard();
 
             Player currentPlayer = players[currentPlayerIndex];
-            System.out.println("Player " + currentPlayer.getSymbol() + "'s turn.");
+            JOptionPane.showMessageDialog(null, "Player " + currentPlayer.getSymbol() + "'s turn.");
 
-            System.out.print("Enter row (0-3): ");
-            int row = scanner.nextInt();
-
-            System.out.print("Enter col (0-3): ");
-            int col = scanner.nextInt();
+            int row = getInput("Enter row (0-" + (board.getSize() - 1) + "): ");
+            int col = getInput("Enter col (0-" + (board.getSize() - 1) + "): ");
 
             if (board.isValidMove(row, col)) {
                 board.makeMove(row, col, currentPlayer);
 
-                if (board.checkWin(currentPlayer, 4)) {
+                if (board.checkWin(currentPlayer, consecutiveToWin)) {
                     printBoard();
-                    System.out.println("Player " + currentPlayer.getSymbol() + " wins!");
+                    JOptionPane.showMessageDialog(null, "Player " + currentPlayer.getSymbol() + " wins!");
                     break;
                 } else if (board.isBoardFull()) {
                     printBoard();
-                    System.out.println("It's a draw!");
+                    JOptionPane.showMessageDialog(null, "It's a draw!");
                     break;
                 } else {
-                    currentPlayerIndex = (currentPlayerIndex + 1) % 3; // Cycle to the next player
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.length; // Cycle to the next player
                 }
             } else {
-                System.out.println("Invalid move! Try again.");
+                JOptionPane.showMessageDialog(null, "Invalid move! Try again.");
             }
         }
-        scanner.close();
+    }
+
+    private int getInput(String prompt) {
+        String input = JOptionPane.showInputDialog(prompt);
+        return Integer.parseInt(input);
     }
 
     private void printBoard() {
         Player[][] grid = board.getGrid();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < board.getSize(); i++) {
+            for (int j = 0; j < board.getSize(); j++) {
                 if (grid[i][j] != null) {
-                    System.out.print(grid[i][j].getSymbol() + " ");
+                    sb.append(grid[i][j].getSymbol()).append(" ");
                 } else {
-                    System.out.print("- ");
+                    sb.append("- ");
                 }
             }
-            System.out.println();
+            sb.append("\n");
         }
+        JOptionPane.showMessageDialog(null, sb.toString());
     }
 
     public static void main(String[] args) {

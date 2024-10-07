@@ -8,93 +8,105 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Graphical Tic-Tac-Toe game for 3 players on a 4x4 grid using Swing.
- */
 public class Game extends JFrame {
     private Board board;
-    private JButton[][] buttons; // Buttons for the 4x4 grid
-    private Player[] players = {Player.NOUGHTS, Player.CROSSES, Player.TRIANGLES}; // 3 players
+    private Player[] players;
     private int currentPlayerIndex;
-    private JLabel statusLabel;
+    private JButton[][] buttons;
+    private int consecutiveToWin;
+    private JPanel boardPanel;
 
     public Game() {
-        board = new Board(4); // Initialize board size to 4x4
-        buttons = new JButton[4][4]; // 4x4 grid of buttons
-        currentPlayerIndex = 0; // Start with the first player (NOUGHTS)
-        initializeGUI();
+        setupGame();
+        setTitle("Tic Tac Toe");
+        setSize(500, 500);  // Set the window size
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);  // Make sure the window is visible
     }
 
-    private void initializeGUI() {
-        setTitle("3-Player Tic-Tac-Toe on a 4x4 Grid");
-        setSize(500, 550); // Adjust window size for a larger grid
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+    private void setupGame() {
+        String[] options = {"2-Player (3x3)", "3-Player (4x4)"};
+        int choice = JOptionPane.showOptionDialog(this, "Welcome to Tic Tac Toe!\nSelect game mode:",
+                "Options", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
-        JPanel gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(4, 4)); // 4x4 grid
+        // Set the players and board size based on the user's choice
+        if (choice == 0) {
+            players = new Player[]{Player.NOUGHTS, Player.CROSSES}; // 2 players
+            board = new Board(3); // Initialize board size to 3x3
+            consecutiveToWin = 3; // Need 3 consecutive symbols to win
+        } else if (choice == 1) {
+            players = new Player[]{Player.NOUGHTS, Player.CROSSES, Player.TRIANGLES}; // 3 players
+            board = new Board(4); // Initialize board size to 4x4
+            consecutiveToWin = 4; // Need 4 consecutive symbols to win
+        }
 
-        // Create buttons for each cell
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                JButton button = new JButton("");
-                button.setFont(new Font("Arial", Font.PLAIN, 40));
-                buttons[i][j] = button;
-                gridPanel.add(button);
+        currentPlayerIndex = 0;
+        createBoardUI(); // Create the board UI immediately after the game mode is selected
+    }
 
-                // Add action listener to handle player moves
+    private void createBoardUI() {
+        if (boardPanel != null) {
+            remove(boardPanel); // Remove any existing board panel before creating a new one
+        }
+
+        int size = board.getSize();
+        boardPanel = new JPanel(new GridLayout(size, size));  // Set up grid layout
+        buttons = new JButton[size][size];  // Initialize button array
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                JButton button = new JButton("-");
                 final int row = i;
                 final int col = j;
+
+                button.setFont(new Font("Arial", Font.PLAIN, 40));  // Increase the font size for visibility
+                button.setFocusPainted(false);  // Remove focus border around buttons
+                button.setPreferredSize(new Dimension(100, 100));  // Set size for each button
+
                 button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        handleMove(row, col);
+                        handleMove(row, col, button);  // Handle the player's move
                     }
                 });
+
+                buttons[i][j] = button;
+                boardPanel.add(button);
             }
         }
 
-        statusLabel = new JLabel("Player " + players[currentPlayerIndex].getSymbol() + "'s turn");
-        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
-
-        add(gridPanel, BorderLayout.CENTER);
-        add(statusLabel, BorderLayout.SOUTH);
-
-        setVisible(true);
+        add(boardPanel, BorderLayout.CENTER);  // Add the board to the main frame
+        validate();  // Refresh the frame to show the new board
     }
 
-    private void handleMove(int row, int col) {
+    private void handleMove(int row, int col, JButton button) {
         if (board.isValidMove(row, col)) {
             Player currentPlayer = players[currentPlayerIndex];
-            board.makeMove(row, col, currentPlayer);
-            buttons[row][col].setText(String.valueOf(currentPlayer.getSymbol()));
+            board.makeMove(row, col, currentPlayer);  // Make the move on the board
+            button.setText(String.valueOf(currentPlayer.getSymbol()));
+            button.setEnabled(false);  // Disable the button after a move is made
 
-            if (board.checkWin(currentPlayer, 4)) { // Check for 4 in a row
-                statusLabel.setText("Player " + currentPlayer.getSymbol() + " wins!");
-                disableBoard(); // Game over, disable further moves
+            // Check if the current player has won
+            if (board.checkWin(currentPlayer, consecutiveToWin)) {
+                JOptionPane.showMessageDialog(this, "Player " + currentPlayer.getSymbol() + " wins!");
+                resetGame();  // Reset the game after a win
             } else if (board.isBoardFull()) {
-                statusLabel.setText("It's a draw!");
-                disableBoard(); // Game over, disable further moves
+                JOptionPane.showMessageDialog(this, "It's a draw!");
+                resetGame();  // Reset the game after a draw
             } else {
-                currentPlayerIndex = (currentPlayerIndex + 1) % 3; // Cycle to the next player
-                statusLabel.setText("Player " + players[currentPlayerIndex].getSymbol() + "'s turn");
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.length;  // Cycle to the next player
             }
         } else {
             JOptionPane.showMessageDialog(this, "Invalid move! Try again.");
         }
     }
 
-    private void disableBoard() {
-        // Disable all buttons
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                buttons[i][j].setEnabled(false);
-            }
-        }
+    private void resetGame() {
+        boardPanel.removeAll();  // Remove the current board
+        setupGame();  // Reinitialize the game and prompt for new mode
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Game());
+        SwingUtilities.invokeLater(() -> new Game());  // Run the game in the Swing thread
     }
 }

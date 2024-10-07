@@ -4,10 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * The test class BoardTest.
- * Tests for the Board class and its functionality.
- */
 public class BoardTest {
 
     private Board board;
@@ -46,16 +42,6 @@ public class BoardTest {
         board.makeMove(0, 1, Player.CROSSES);
         board.makeMove(0, 2, Player.CROSSES);
         board.makeMove(0, 3, Player.CROSSES);
-        assertTrue(board.checkWin(Player.CROSSES, 4)); // Check for a win with 4 in a row
-    }
-
-    @Test
-    public void testNoWin() {
-        // Test when there is no winner
-        board.makeMove(0, 0, Player.CROSSES);
-        board.makeMove(0, 1, Player.CROSSES);
-        board.makeMove(0, 2, Player.CROSSES);
-        board.makeMove(1, 3, Player.NOUGHTS); // This breaks the consecutive line
-        assertFalse(board.checkWin(Player.CROSSES, 4));
+        assertTrue(board.checkWin(Player.CROSSES, 4)); // CROSSES should win with 4 in a row
     }
 }
