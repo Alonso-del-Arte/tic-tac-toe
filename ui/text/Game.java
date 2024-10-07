@@ -1,39 +1,72 @@
 package ui.text;
 
+import tictactoe.Board;
+import tictactoe.Player;
 
-/**
- * Write a description of class Game here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
+import java.util.Scanner;
+
 public class Game {
-    // instance variables - replace the example below with your own
-    private int x;
+    private Board board;
+    private Player[] players = {Player.NOUGHTS, Player.CROSSES, Player.TRIANGLES}; // 3 players
+    private int currentPlayerIndex;
 
-    /**
-     * Constructor for objects of class Game
-     */
-    public Game()
-    {
-        // initialise instance variables
-        x = 0;
+    public Game() {
+        board = new Board(4); // Initialize board size to 4x4
+        currentPlayerIndex = 0; // Start with the first player
+        playGame();
     }
 
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
-     */
-    public int sampleMethod(int y)
-    {
-        // put your code here
-        return x + y;
+    public void playGame() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            printBoard();
+
+            Player currentPlayer = players[currentPlayerIndex];
+            System.out.println("Player " + currentPlayer.getSymbol() + "'s turn.");
+
+            System.out.print("Enter row (0-3): ");
+            int row = scanner.nextInt();
+
+            System.out.print("Enter col (0-3): ");
+            int col = scanner.nextInt();
+
+            if (board.isValidMove(row, col)) {
+                board.makeMove(row, col, currentPlayer);
+
+                if (board.checkWin(currentPlayer, 4)) {
+                    printBoard();
+                    System.out.println("Player " + currentPlayer.getSymbol() + " wins!");
+                    break;
+                } else if (board.isBoardFull()) {
+                    printBoard();
+                    System.out.println("It's a draw!");
+                    break;
+                } else {
+                    currentPlayerIndex = (currentPlayerIndex + 1) % 3; // Cycle to the next player
+                }
+            } else {
+                System.out.println("Invalid move! Try again.");
+            }
+        }
+        scanner.close();
     }
-    
+
+    private void printBoard() {
+        Player[][] grid = board.getGrid();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (grid[i][j] != null) {
+                    System.out.print(grid[i][j].getSymbol() + " ");
+                } else {
+                    System.out.print("- ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
     public static void main(String[] args) {
-        System.out.println("Game not ready yet");
+        new Game();
     }
-    
 }
