@@ -3,10 +3,6 @@ package tictactoe;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-/**
- * The test class PlayerTest.
- * Tests for the Player enum and its functionality.
- */
 public class PlayerTest {
 
     @Test

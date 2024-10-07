@@ -1,7 +1,7 @@
 package tictactoe;
 
 public enum Player {
-    NOUGHTS('O'), CROSSES('X'), TRIANGLES('T'); // Third player added
+    NOUGHTS('O'), CROSSES('X'), TRIANGLES('T'); // 3 players
 
     private final char symbol;
 

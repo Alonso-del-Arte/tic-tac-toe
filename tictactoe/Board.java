@@ -9,17 +9,14 @@ public class Board {
         grid = new Player[size][size];
     }
 
-    // Method to check if a move is valid
     public boolean isValidMove(int row, int col) {
         return grid[row][col] == null;
     }
 
-    // Method to make a move
     public void makeMove(int row, int col, Player player) {
         grid[row][col] = player;
     }
 
-    // Method to check if the board is full
     public boolean isBoardFull() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -31,7 +28,6 @@ public class Board {
         return true;
     }
 
-    // Method to check for a win with 4 consecutive symbols
     public boolean checkWin(Player player, int consecutiveToWin) {
         return checkRows(player, consecutiveToWin) || checkCols(player, consecutiveToWin) || checkDiagonals(player, consecutiveToWin);
     }
@@ -89,8 +85,11 @@ public class Board {
         return false;
     }
 
-    // Getter for the grid
     public Player[][] getGrid() {
         return grid;
+    }
+
+    public int getSize() {
+        return size;
     }
 }
